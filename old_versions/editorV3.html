@@ -1,0 +1,141 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      #contenidorDivs, #contenidorFons {
+        width: 640px;
+        height: 640px;
+        position: absolute;
+      }
+      #controls, #botoEsborrar {
+        position: absolute;
+      }
+      div {
+        float:left;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+
+      document.draggable="false";
+      color1pred="#ff0000";
+      color2pred="#0000ff";
+      color1=color1pred;
+      color2=color2pred;
+      creaFons();
+      creaDivs();
+      posaControls();
+
+      document.getElementById("contenidorDivs").oncontextmenu = function(){return false}
+      function esborrarImatge()
+      {
+        var divs=document.getElementsByClassName("divs");
+        for(var i=0;i<divs.length;i++)
+        {
+          if (divs[i].style.backgroundColor!="")// si tenen algun color, els hi treu //
+            divs[i].style.backgroundColor="";
+        }
+      }
+      function posaControls()
+      {
+        var nou=document.createElement("div");
+        nou.id="controls";
+        nou.style.left=660;
+        document.body.appendChild(nou);
+
+        for (i=0;i<2;i++)
+        {
+          var nou=document.createElement("input");
+          nou.id="color"+(i+1);
+          nou.type="color";
+          nou.style.position="absolute";
+          nou.style.left=i*50;
+          if (i==0)
+            nou.value=color1pred;
+          else
+            nou.value=color2pred;
+          document.getElementById("controls").appendChild(nou);
+        }
+        color1=document.getElementById("color1").value;
+        color2=document.getElementById("color2").value;
+
+        document.getElementById("color1").onchange = function()
+        { color1=this.value; }
+        document.getElementById("color2").onchange = function()
+        { color2=this.value; }
+        var nou=document.createElement("input");
+        nou.id="botoEsborrar";
+        nou.type="button";
+        nou.value="Esborrar";
+        nou.style.top="30px";
+        nou.onclick=function(){
+          esborrarImatge();
+        }
+        document.getElementById("controls").appendChild(nou);
+      }
+      function pintaDivs(events,aixo)
+      {//buttons => 1=princ 2=secundari 4=central
+        if (typeof(events)!="undefined" && events.buttons!=0)
+        {
+          events.preventDefault();
+          if (events.buttons==1)//boto clicat
+            aixo.style.backgroundColor=document.getElementById("color1").value;
+          else if (events.buttons==2)
+            aixo.style.backgroundColor=document.getElementById("color2").value;
+        }
+      }
+      function creaFons()
+      {// creem un fons de 64x64 perque sigui el fons sobre el qual pintar //
+        var nou=document.createElement("div");
+        nou.id="contenidorFons";
+        document.body.appendChild(nou);
+        for (var i=1;i<=4096;i++)
+        {
+          var nou=document.createElement("div");
+          nou.style.width="10px";
+          nou.style.height="10px";
+          if (Math.trunc((i/64)-0.01)%2==0)
+          {
+            if (i%2==0)
+              nou.style.backgroundColor="e3e3e3";
+            else
+              nou.style.backgroundColor="c3c3c3";
+          }
+          else {
+            if (i%2==1)// atent amb aquest 1, que a dalt es 0 //
+              nou.style.backgroundColor="e3e3e3";
+            else
+              nou.style.backgroundColor="c3c3c3";
+          }
+          document.getElementById("contenidorFons").appendChild(nou);
+        }
+      }
+      function creaDivs()
+      {
+        var nou=document.createElement("div");
+        nou.id="contenidorDivs";
+        document.body.appendChild(nou);
+        for (var i=1;i<=1024;i++)
+        {
+          var j=i;
+          var nou=document.createElement("div");
+          nou.id=i;
+          nou.className="divs";
+          nou.style.width="20px";
+          nou.style.height="20px";
+          nou.onmouseover = function(event) {
+            pintaDivs(event,this);
+          }
+          nou.onmousedown = function(event) {
+            pintaDivs(event,this);
+          }
+
+          document.getElementById("contenidorDivs").appendChild(nou);
+
+        }
+      }
+      
+    </script>
+  </body>
+</html>

@@ -1,0 +1,320 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      #contenidorDivs, #contenidorFons {
+        width: 640px;
+        height: 640px;
+        position: absolute;
+      }
+      #controls, #botoEsborrar, #botoNegreBlanc {
+        position: absolute;
+      }
+      div {
+        float:left;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      
+      document.draggable="false";
+      color1pred="#000000";
+      color2pred="#ffffff";
+      COLOR1=color1pred;
+      COLOR2=color2pred;
+
+      ARRcolors=new Array(32);
+      for (var i=0;i<32;i++)// creem la array buida //
+        ARRcolors[i]=new Array(32);
+
+      creaFons();
+      creaDivs();
+      posaControls();
+
+      document.getElementById("contenidorDivs").oncontextmenu = function() { return false }
+      function canviaColor1(r,g,b)
+      {
+        COLOR1="rgb("+r+","+g+","+b+")";
+        document.getElementById("DIVcolor1").style.backgroundColor=COLOR1;// posar color de fons a on hi ha els ranges //
+        document.getElementById("color1").value=r;
+        document.getElementById("color2").value=g;
+        document.getElementById("color3").value=b;
+      }
+      function canviaColor2(r,g,b)
+      {
+        COLOR2="rgb("+r+","+g+","+b+")";
+        document.getElementById("DIVcolor2").style.backgroundColor=COLOR2;
+        document.getElementById("color4").value=r;
+        document.getElementById("color5").value=g;
+        document.getElementById("color6").value=b;
+      }
+      function esborrarImatge()
+      {
+        var divs=document.getElementsByClassName("divsPerDibuixar");
+        for(var i=0;i<divs.length;i++)
+          if (divs[i].style.backgroundColor!="")// si tenen algun color, els hi treu //
+            divs[i].style.backgroundColor="";
+
+        ARRcolors=new Array(32);
+        for (var i=0;i<32;i++)// esborrem la array //
+          ARRcolors[i]=new Array(32);
+      }
+      function posaControls()
+      {
+        var nou=document.createElement("div");
+        nou.id="controls";
+        nou.style.left=660;
+        nou.style.width="500px";
+        nou.style.height="250px";
+        //nou.style.padding="20px";
+        //nou.style.backgroundColor="lightgreen";
+        document.body.appendChild(nou);
+
+        for (i=0;i<2;i++)
+        {
+          var nou=document.createElement("input");
+          nou.id="HTML5color"+(i+1);
+          nou.style.display="none";
+          nou.type="color";
+          nou.style.position="absolute";
+          nou.style.left=i*50;
+          if (i==0)
+            nou.value=color1pred;
+          else
+            nou.value=color2pred;
+          document.getElementById("controls").appendChild(nou);
+        }
+
+        document.getElementById("HTML5color1").onchange = function()
+        { COLOR1=this.value; }
+        document.getElementById("HTML5color2").onchange = function()
+        { COLOR2=this.value; }
+        // boto per esborrar el dibuix //
+        var nou=document.createElement("input");
+        nou.id="botoEsborrar";
+        nou.type="button";
+        nou.value="Esborrar";
+        nou.style.top="30px";
+        nou.onclick=function(){
+          esborrarImatge();
+        }
+        document.getElementById("controls").appendChild(nou);
+        // boto per tornar els colors a negre i blanc //
+        var nou=document.createElement("input");
+        nou.id="botoNegreBlanc";
+        nou.type="button";
+        nou.value="Negre/Blanc";
+        nou.style.top="60px";
+        nou.onclick=function(){
+          document.getElementById("select1").value=1;
+          document.getElementById("select2").value=2;
+          canviaColor1(0,0,0);
+          canviaColor2(255,255,255);
+        }
+        document.getElementById("controls").appendChild(nou);
+
+        for (i=0;i<2;i++)
+        {// CONTENIDOR DELS RANGE //
+          var nou=document.createElement("div");
+          nou.id="DIVcolor"+(i+1);// DIVcolor1 , DIVcolor2 //
+          nou.style.width="155px";
+          nou.style.height="105px";
+          nou.style.position="absolute";
+          nou.style.left=i*170+100;
+          if (i==0)
+            nou.style.backgroundColor=COLOR1;
+          else
+            nou.style.backgroundColor=COLOR2;
+          document.getElementById("controls").appendChild(nou);
+        }
+        for (i=0;i<6;i++)
+        {// CADASCUN DELS 6 CONTROLS DELS COLORS //
+          var nou=document.createElement("input")
+          nou.id="color"+(i+1);
+          nou.type="range";
+          nou.max=255;
+          nou.backgroundColor="lightgreen";
+          nou.style.top=(i%3)*30+10;
+          nou.style.left=10;
+          nou.style.position="absolute";
+
+          if (i<3)
+          {
+            nou.value=0;
+            nou.oninput=function()
+            {
+              canviaColor1(document.getElementById("color1").value,document.getElementById("color2").value,document.getElementById("color3").value);
+              document.getElementById("select1").value=0;
+            }
+            document.getElementById("DIVcolor1").appendChild(nou);// pare //
+          }
+          else
+          {
+            nou.value=255;
+            nou.oninput=function()
+            {
+              canviaColor2(document.getElementById("color4").value,document.getElementById("color5").value,document.getElementById("color6").value);
+              document.getElementById("select2").value=0;
+            }
+            document.getElementById("DIVcolor2").appendChild(nou);
+          }
+        }
+
+
+        // selects //
+
+        colorsSelect=["-----","Negre","Blanc","Vermell","Blau","Verd","Magenta","Groc","Blau Cel","Gris"];
+        // la posicio 0 de l'array mai es podra seleccionar //
+        ARRcolorR=[255,0,255,255,0,0,255,255,0,128];
+        ARRcolorG=[255,0,255,0,0,255,0,255,255,128];
+        ARRcolorB=[255,0,255,0,255,0,255,0,255,128];
+
+        for (i=0;i<2;i++)
+        {
+          var nou=document.createElement("select");
+          nou.id="select"+(i+1);
+          nou.style.position="absolute";
+          nou.style.top=120;
+          nou.style.left=135+i*170;
+          if (i==0)
+          {
+            nou.onchange=function() {
+              if (this.value!=0)
+                canviaColor1(ARRcolorR[this.value],ARRcolorG[this.value],ARRcolorB[this.value]);
+            }
+          }
+          else
+          {
+            nou.onchange=function() {
+              if (this.value!=0)
+                canviaColor2(ARRcolorR[this.value],ARRcolorG[this.value],ARRcolorB[this.value]);
+            }
+          }
+          document.getElementById("controls").appendChild(nou);
+
+          for (j=0;j<colorsSelect.length;j++)
+          {// cada opcio //
+            var nou=document.createElement("option");
+            nou.value=j;
+            nou.innerHTML=colorsSelect[j];
+            if (i==0 && j==1)
+              nou.selected=true;
+            if (i==1 && j==2)
+              nou.selected=true;
+            nou.style.backgroundColor="rgb("+ARRcolorR[j]+","+ARRcolorG[j]+","+ARRcolorB[j]+")";
+            if (j==1 || j==4 || j==9)
+              nou.style.color="white";
+            if(j==0)
+              { nou.disabled=true; }
+            document.getElementById("select"+(i+1)).appendChild(nou);
+          }
+        }
+
+
+
+        // botons Aleatori //
+        for (i=0;i<2;i++)
+        {
+          var nou=document.createElement("input");
+          nou.id="botoAleatori"+(i+1);
+          nou.type="button";
+          nou.value="Aleatori "+(i+1);
+          nou.style.position="absolute";
+          nou.style.left=135+i*170;
+          nou.style.top=170;
+          if (i==0)
+            nou.onclick=function() {
+              canviaColor1(Math.trunc(Math.random()*256),Math.trunc(Math.random()*256),Math.trunc(Math.random()*256));
+              document.getElementById("select1").value=0;
+            }
+          else
+            nou.onclick=function() {
+              canviaColor2(Math.trunc(Math.random()*256),Math.trunc(Math.random()*256),Math.trunc(Math.random()*256));
+              document.getElementById("select2").value=0;
+            }
+          document.getElementById("controls").appendChild(nou);
+        }
+      }
+
+
+
+      function pintaDivs(events,aixo)
+      {//buttons => 1=princ 2=secundari 4=central
+        if (typeof(events)!="undefined" && events.buttons!=0)
+        {
+          events.preventDefault();
+          if (events.buttons==1)//boto clicat
+          {
+            aixo.style.backgroundColor=COLOR1;
+            ARRcolors[aixo.dataset.columnes][aixo.dataset.files]=COLOR1;
+          }
+          else if (events.buttons==2)
+          {
+            aixo.style.backgroundColor=COLOR2;
+            ARRcolors[aixo.dataset.columnes][aixo.dataset.files]=COLOR2;
+          }
+        }
+      }
+      function creaFons()
+      {// creem un fons de 64x64 perque sigui el fons sobre el qual pintar //
+        var nou=document.createElement("div");
+        nou.id="contenidorFons";
+        document.body.appendChild(nou);
+        for (var i=0;i<4096;i++)
+        {
+          var nou=document.createElement("div");
+          nou.style.width="10px";
+          nou.style.height="10px";
+          if (Math.trunc(i/64)%2==0)
+          {
+            if (i%2==0)
+              nou.style.backgroundColor="e3e3e3";
+            else
+              nou.style.backgroundColor="c3c3c3";
+          }
+          else {
+            if (i%2==1)// atent amb aquest 1, que a dalt es 0 //
+              nou.style.backgroundColor="e3e3e3";
+            else
+              nou.style.backgroundColor="c3c3c3";
+          }
+          document.getElementById("contenidorFons").appendChild(nou);
+        }
+      }
+      function creaDivs()
+      {
+        var nou=document.createElement("div");
+        nou.id="contenidorDivs";
+        document.body.appendChild(nou);
+        for (var i=0;i<1024;i++)
+        {
+          //var j=i;
+          var nou=document.createElement("div");
+          nou.id=i+1;
+          nou.className="divsPerDibuixar";
+          nou.style.width="20px";
+          nou.style.height="20px";
+          nou.onmouseover = function(event) {
+            pintaDivs(event,this);
+          }
+          nou.onmousedown = function(event) {
+            pintaDivs(event,this);
+          }
+
+          nou.dataset.columnes=i%32;
+          nou.dataset.files=Math.trunc(i/32);
+
+          document.getElementById("contenidorDivs").appendChild(nou);
+
+        }
+      }
+
+      // funcionen be //
+      function idAposicio(id)
+      { return [(id-1)%32,Math.trunc((id-1)/32)]; }// retorna array 2 pos //
+      function posicioAid(posicio)// rep array 2 pos //
+      { return 1+posicio[0]+posicio[1]*32; }// retorna num //
+    </script>
+  </body>
+</html>

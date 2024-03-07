@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html dir="ltr" lang="es">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+  <meta name="color-scheme" content="light dark">
+  <meta name="google" value="notranslate">
+
+  <script>
+    function addRow(name, url, isdir,
+      size, size_string, date_modified, date_modified_string) {
+      if (name == "." || name == "..")
+        return;
+
+      var root = document.location.pathname;
+      if (root.substr(-1) !== "/")
+        root += "/";
+
+      var tbody = document.getElementById("tbody");
+      var row = document.createElement("tr");
+      var file_cell = document.createElement("td");
+      var link = document.createElement("a");
+
+      link.className = isdir ? "icon dir" : "icon file";
+
+      if (isdir) {
+        name = name + "/";
+        url = url + "/";
+        size = 0;
+        size_string = "";
+      } else {
+        link.draggable = "true";
+        link.addEventListener("dragstart", onDragStart, false);
+      }
+      link.innerText = name;
+      link.href = root + url;
+
+      file_cell.dataset.value = name;
+      file_cell.appendChild(link);
+
+      row.appendChild(file_cell);
+      row.appendChild(createCell(size, size_string));
+      row.appendChild(createCell(date_modified, date_modified_string));
+
+      tbody.appendChild(row);
+    }
+
+    function onDragStart(e) {
+      var el = e.srcElement;
+      var name = el.innerText.replace(":", "");
+      var download_url_data = "application/octet-stream:" + name + ":" + el.href;
+      e.dataTransfer.setData("DownloadURL", download_url_data);
+      e.dataTransfer.effectAllowed = "copy";
+    }
+
+    function createCell(value, text) {
+      var cell = document.createElement("td");
+      cell.setAttribute("class", "detailsColumn");
+      cell.dataset.value = value;
+      cell.innerText = text;
+      return cell;
+    }
+
+    function start(location) {
+      var header = document.getElementById("header");
+      header.innerText = header.innerText.replace("LOCATION", location);
+
+      document.getElementById("title").innerText = header.innerText;
+    }
+
+    function onHasParentDirectory() {
+      var box = document.getElementById("parentDirLinkBox");
+      box.style.display = "block";
+
+      var root = document.location.pathname;
+      if (!root.endsWith("/"))
+        root += "/";
+
+      var link = document.getElementById("parentDirLink");
+      link.href = root + "..";
+    }
+
+    function sortTable(column) {
+      var theader = document.getElementById("theader");
+      var oldOrder = theader.cells[column].dataset.order || '1';
+      oldOrder = parseInt(oldOrder, 10)
+      var newOrder = 0 - oldOrder;
+      theader.cells[column].dataset.order = newOrder;
+
+      var tbody = document.getElementById("tbody");
+      var rows = tbody.rows;
+      var list = [], i;
+      for (i = 0; i < rows.length; i++) {
+        list.push(rows[i]);
+      }
+
+      list.sort(function (row1, row2) {
+        var a = row1.cells[column].dataset.value;
+        var b = row2.cells[column].dataset.value;
+        if (column) {
+          a = parseInt(a, 10);
+          b = parseInt(b, 10);
+          return a > b ? newOrder : a < b ? oldOrder : 0;
+        }
+
+        // Column 0 is text.
+        if (a > b)
+          return newOrder;
+        if (a < b)
+          return oldOrder;
+        return 0;
+      });
+
+      // Appending an existing child again just moves it.
+      for (i = 0; i < list.length; i++) {
+        tbody.appendChild(list[i]);
+      }
+    }
+
+    // Add event handlers to column headers.
+    function addHandlers(element, column) {
+      element.onclick = (e) => sortTable(column);
+      element.onkeydown = (e) => {
+        if (e.key == 'Enter' || e.key == ' ') {
+          sortTable(column);
+          e.preventDefault();
+        }
+      };
+    }
+
+    function onLoad() {
+      addHandlers(document.getElementById('nameColumnHeader'), 0);
+      addHandlers(document.getElementById('sizeColumnHeader'), 1);
+      addHandlers(document.getElementById('dateColumnHeader'), 2);
+    }
+
+    window.addEventListener('DOMContentLoaded', onLoad);
+  </script>
+
+  <style>
+    h1 {
+      border-bottom: 1px solid #c0c0c0;
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+      white-space: nowrap;
+    }
+
+    table {
+      border-collapse: collapse;
+    }
+
+    th {
+      cursor: pointer;
+    }
+
+    td.detailsColumn {
+      padding-inline-start: 2em;
+      text-align: end;
+      white-space: nowrap;
+    }
+
+    a.icon {
+      padding-inline-start: 1.5em;
+      text-decoration: none;
+      user-select: auto;
+    }
+
+    a.icon:hover {
+      text-decoration: underline;
+    }
+
+    a.file {
+      background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAIAAACQkWg2AAAABnRSTlMAAAAAAABupgeRAAABEElEQVR42nRRx3HDMBC846AHZ7sP54BmWAyrsP588qnwlhqw/k4v5ZwWxM1hzmGRgV1cYqrRarXoH2w2m6qqiqKIR6cPtzc3xMSML2Te7XZZlnW7Pe/91/dX47WRBHuA9oyGmRknzGDjab1ePzw8bLfb6WRalmW4ip9FDVpYSWZgOp12Oh3nXJ7nxoJSGEciteP9y+fH52q1euv38WosqA6T2gGOT44vry7BEQtJkMAMMpa6JagAMcUfWYa4hkkzAc7fFlSjwqCoOUYAF5RjHZPVCFBOtSBGfgUDji3c3jpibeEMQhIMh8NwshqyRsBJgvF4jMs/YlVR5KhgNpuBLzk0OcUiR3CMhcPaOzsZiAAA/AjmaB3WZIkAAAAASUVORK5CYII=") left top no-repeat;
+    }
+
+    a.dir {
+      background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAABt0lEQVR42oxStZoWQRCs2cXdHTLcHZ6EjAwnQWIkJyQlRt4Cd3d3d1n5d7q7ju1zv/q+mh6taQsk8fn29kPDRo87SDMQcNAUJgIQkBjdAoRKdXjm2mOH0AqS+PlkP8sfp0h93iu/PDji9s2FzSSJVg5ykZqWgfGRr9rAAAQiDFoB1OfyESZEB7iAI0lHwLREQBcQQKqo8p+gNUCguwCNAAUQAcFOb0NNGjT+BbUC2YsHZpWLhC6/m0chqIoM1LKbQIIBwlTQE1xAo9QDGDPYf6rkTpPc92gCUYVJAZjhyZltJ95f3zuvLYRGWWCUNkDL2333McBh4kaLlxg+aTmyL7c2xTjkN4Bt7oE3DBP/3SRz65R/bkmBRPGzcRNHYuzMjaj+fdnaFoJUEdTSXfaHbe7XNnMPyqryPcmfY+zURaAB7SHk9cXSH4fQ5rojgCAVIuqCNWgRhLYLhJB4k3iZfIPtnQiCpjAzeBIRXMA6emAqoEbQSoDdGxFUrxS1AYcpaNbBgyQBGJEOnYOeENKR/iAd1npusI4C75/c3539+nbUjOgZV5CkAU27df40lH+agUdIuA/EAgDmZnwZlhDc0wAAAABJRU5ErkJggg==") left top no-repeat;
+    }
+
+    a.up {
+      background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAACM0lEQVR42myTA+w1RxRHz+zftmrbdlTbtq04qRGrCmvbDWp9tq3a7tPcub8mj9XZ3eHOGQdJAHw77/LbZuvnWy+c/CIAd+91CMf3bo+bgcBiBAGIZKXb19/zodsAkFT+3px+ssYfyHTQW5tr05dCOf3xN49KaVX9+2zy1dX4XMk+5JflN5MBPL30oVsvnvEyp+18Nt3ZAErQMSFOfelCFvw0HcUloDayljZkX+MmamTAMTe+d+ltZ+1wEaRAX/MAnkJdcujzZyErIiVSzCEvIiq4O83AG7LAkwsfIgAnbncag82jfPPdd9RQyhPkpNJvKJWQBKlYFmQA315n4YPNjwMAZYy0TgAweedLmLzTJSTLIxkWDaVCVfAbbiKjytgmm+EGpMBYW0WwwbZ7lL8anox/UxekaOW544HO0ANAshxuORT/RG5YSrjlwZ3lM955tlQqbtVMlWIhjwzkAVFB8Q9EAAA3AFJ+DR3DO/Pnd3NPi7H117rAzWjpEs8vfIqsGZpaweOfEAAFJKuM0v6kf2iC5pZ9+fmLSZfWBVaKfLLNOXj6lYY0V2lfyVCIsVzmcRV9Y0fx02eTaEwhl2PDrXcjFdYRAohQmS8QEFLCLKGYA0AeEakhCCFDXqxsE0AQACgAQp5w96o0lAXuNASeDKWIvADiHwigfBINpWKtAXJvCEKWgSJNbRvxf4SmrnKDpvZavePu1K/zu/due1X/6Nj90MBd/J2Cic7WjBp/jUdIuA8AUtd65M+PzXIAAAAASUVORK5CYII=") left top no-repeat;
+    }
+
+    html[dir=rtl] a {
+      background-position-x: right;
+    }
+
+    #parentDirLinkBox {
+      margin-bottom: 10px;
+      padding-bottom: 10px;
+    }
+  </style>
+
+  <title id="title">Index of icon-editor-2016/old_versions/</title>
+
+</head>
+
+<body>
+
+  <h1 id="header">Index of icon-editor-2016/old_versions/</h1>
+
+  <div id="parentDirLinkBox" style="display: block;">
+    <a id="parentDirLink" class="icon up" href="..">
+      <span id="parentDirText">[main directory]</span>
+    </a>
+  </div>
+
+  <table>
+    <thead>
+      <tr class="header" id="theader">
+        <th id="nameColumnHeader" tabindex="0" role="button">Name</th>
+        <th id="sizeColumnHeader" class="detailsColumn" tabindex="0" role="button">Size</th>
+        <th id="dateColumnHeader" class="detailsColumn" tabindex="0" role="button">Modification date</th>
+      </tr>
+    </thead>
+    <tbody id="tbody">
+      <tr>
+        <td data-value="editorV1.html"><a class="icon file" draggable="true" href="editorV1.html">editorV1.html</a></td>
+        <td class="detailsColumn" data-value="1840">1.8 kB</td>
+        <td class="detailsColumn" data-value="1456165246">22/2/16, 19:20:46</td>
+      </tr>
+      <tr>
+        <td data-value="editorV2.html"><a class="icon file" draggable="true" href="editorV2.html">editorV2.html</a></td>
+        <td class="detailsColumn" data-value="2442">2.4 kB</td>
+        <td class="detailsColumn" data-value="1456171080">22/2/16, 20:58:00</td>
+      </tr>
+      <tr>
+        <td data-value="editorV3.html"><a class="icon file" draggable="true" href="editorV3.html">editorV3.html</a></td>
+        <td class="detailsColumn" data-value="4450">4.3 kB</td>
+        <td class="detailsColumn" data-value="1456255720">23/2/16, 20:28:40</td>
+      </tr>
+      <tr>
+        <td data-value="editorV4.html"><a class="icon file" draggable="true" href="editorV4.html">editorV4.html</a></td>
+        <td class="detailsColumn" data-value="10940">10.7 kB</td>
+        <td class="detailsColumn" data-value="1456342146">24/2/16, 20:29:06</td>
+      </tr>
+      <tr>
+        <td data-value="editorV5.html"><a class="icon file" draggable="true" href="editorV5.html">editorV5.html</a></td>
+        <td class="detailsColumn" data-value="14208">13.9 kB</td>
+        <td class="detailsColumn" data-value="1456499018">26/2/16, 16:03:38</td>
+      </tr>
+      <tr>
+        <td data-value="editorV6.html"><a class="icon file" draggable="true" href="editorV6.html">editorV6.html</a></td>
+        <td class="detailsColumn" data-value="17549">17.1 kB</td>
+        <td class="detailsColumn" data-value="1456514166">26/2/16, 20:16:06</td>
+      </tr>
+      <tr>
+        <td data-value="editorV7.html"><a class="icon file" draggable="true" href="editorV7.html">editorV7.html</a></td>
+        <td class="detailsColumn" data-value="18599">18.2 kB</td>
+        <td class="detailsColumn" data-value="1456515740">26/2/16, 20:42:20</td>
+      </tr>
+      <tr>
+        <td data-value="editorV8.html"><a class="icon file" draggable="true" href="editorV8.html">editorV8.html</a></td>
+        <td class="detailsColumn" data-value="20002">19.5 kB</td>
+        <td class="detailsColumn" data-value="1456851450">1/3/16, 17:57:30</td>
+      </tr>
+      <tr>
+        <td data-value="editorV9.html"><a class="icon file" draggable="true" href="editorV9.html">editorV9.html</a></td>
+        <td class="detailsColumn" data-value="23737">23.2 kB</td>
+        <td class="detailsColumn" data-value="1456948792">2/3/16, 20:59:52</td>
+      </tr>
+      <tr>
+        <td data-value="editorV10.html"><a class="icon file" draggable="true" href="editorV10.html">editorV10.html</a>
+        </td>
+        <td class="detailsColumn" data-value="23779">23.2 kB</td>
+        <td class="detailsColumn" data-value="1457121478">4/3/16, 20:57:58</td>
+      </tr>
+      <tr>
+        <td data-value="editorV11.html"><a class="icon file" draggable="true" href="editorV11.html">editorV11.html</a>
+        </td>
+        <td class="detailsColumn" data-value="23868">23.3 kB</td>
+        <td class="detailsColumn" data-value="1477074065">21/10/16, 20:21:05</td>
+      </tr>
+    </tbody>
+  </table>
+</body>
+
+</html>

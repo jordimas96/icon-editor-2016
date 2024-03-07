@@ -1,0 +1,67 @@
+<html>
+  <head>
+    <meta charset="utf-8">
+    <style>
+      #contenidorDivs, #contenidorFons {
+        width: 640px;
+        height: 640px;
+        position: absolute;
+      }
+      div {
+        float:left;
+      }
+    </style>
+  </head>
+  <body>
+    <script>
+      creaFons();
+      creaDivs();
+      function creaFons()
+      {// creem un fons de 64x64 perque sigui el fons sobre el qual pintar //
+        var nou=document.createElement("div");
+        nou.id="contenidorFons";
+        document.body.appendChild(nou);
+        for (var i=1;i<=4096;i++)
+        {
+          var nou=document.createElement("div");
+          nou.style.width="10px";
+          nou.style.height="10px";
+          if (Math.trunc((i/64)-0.01)%2==0)
+          {
+            if (i%2==0)
+              nou.style.backgroundColor="";
+            else
+              nou.style.backgroundColor="";
+          }
+          else {
+            if (i%2==1)// atent amb aquest 1, que a dalt es 0 //
+              nou.style.backgroundColor="";
+            else
+              nou.style.backgroundColor="";
+          }
+          document.getElementById("contenidorFons").appendChild(nou);
+        }
+      }
+      function creaDivs()
+      {
+        var nou=document.createElement("div");
+        nou.id="contenidorDivs";
+        document.body.appendChild(nou);
+        for (var i=1;i<=1024;i++)
+        {
+          var j=i;
+          var nou=document.createElement("div");
+          nou.id=i;
+          nou.style.width="20px";
+          nou.style.height="20px";
+          nou.onclick = function()
+          {
+            this.style.backgroundColor="red";
+          }
+          document.getElementById("contenidorDivs").appendChild(nou);
+
+        }
+      }
+    </script>
+  </body>
+</html>
