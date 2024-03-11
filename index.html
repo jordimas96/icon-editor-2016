@@ -201,8 +201,9 @@
         var nou=document.createElement("input");
         nou.id="botoEsborrar";
         nou.type="button";
-        nou.value="Esborrar Tot";
+        nou.value="Clear all";
         nou.style.top="30px";
+        nou.style.width="100px";
         nou.onclick=function(){
           esborrarImatge();
         }
@@ -213,8 +214,9 @@
         var nou=document.createElement("input");
         nou.id="botoNegreBlanc";
         nou.type="button";
-        nou.value="Negre/Blanc";
+        nou.value="Black / White";
         nou.style.top="60px";
+        nou.style.width="100px";
         nou.onclick=function(){
           document.getElementById("select1").value=1;
           document.getElementById("select2").value=2;
@@ -231,7 +233,7 @@
           nou.style.width="155px";
           nou.style.height="105px";
           nou.style.position="absolute";
-          nou.style.left=i*170+100;
+          nou.style.left=i*170+111;
           if (i==0)
             nou.style.backgroundColor=COLOR1;
           else
@@ -281,7 +283,7 @@
 
 
         // SELECTS //
-        colorsSelect=["-----","Negre","Blanc","Vermell","Blau","Verd","Magenta","Groc","Blau Cel","Gris"];
+        colorsSelect=["-----","Black","White","Red","Blue","Lime","Magenta","Yellow","Cyan","Gray"];
         // la posicio 0 de l'array mai es podra seleccionar //
         ARRcolorR=[255,0,255,255,0,0,255,255,0,128];
         ARRcolorG=[255,0,255,0,0,255,0,255,255,128];
@@ -335,7 +337,7 @@
           var nou=document.createElement("input");
           nou.id="botoAleatori"+(i+1);// botoAleatori1, botoAleatori2
           nou.type="button";
-          nou.value="Aleatori "+(i+1);
+          nou.value="Random "+(i+1);
           nou.style.position="absolute";
           nou.style.left=135+i*170;
           nou.style.top=170;
@@ -373,7 +375,7 @@
 
           // texts "Esborrar" pels checkboxs //
           var nou=document.createElement("span");
-          nou.innerHTML="Esborrar";// Esborrar, Esborrar //
+          nou.innerHTML="Erase";// Esborrar, Esborrar //
           nou.style.position="absolute";
           nou.style.left=155+i*170;
           nou.style.top=203;
@@ -416,7 +418,7 @@
         // text checkBox graella //
         var nou=document.createElement("span");
         nou.id="textGraella";
-        nou.innerHTML="Graella";
+        nou.innerHTML="Grid";
         nou.style.fontFamily="Verdana";
         nou.style.position="absolute";
         nou.style.top=293;
@@ -438,14 +440,14 @@
           document.getElementById("contenidorDivs").style.transform="rotate("+this.value+"deg)";
           document.getElementById("canvas").style.transform="rotate("+this.value+"deg)";
           rotacio=this.value/90;//aixo em servira per controlar la posicio al fer lo de moure una posicio cap a la dreta o esquerra//
-          document.getElementById("textRotacio").innerHTML=this.value+" Graus"
+          document.getElementById("textRotacio").innerHTML=this.value+" degrees"
         }
         document.getElementById("controls").appendChild(nou);
 
         // text rotacio //
         var nou=document.createElement("span");
         nou.id="textRotacio";
-        nou.innerHTML=document.getElementById("rotacio").value+" Graus";
+        nou.innerHTML=document.getElementById("rotacio").value+" degrees";
         nou.style.fontFamily="Verdana";
         nou.style.position="absolute";
         nou.style.top=250;
@@ -469,9 +471,9 @@
           // texts mirall vertical i mirall horitzontal //
           var nou=document.createElement("span");
           if (i==0)
-            nou.innerHTML="Mirall vertical";
+            nou.innerHTML="Vertical mirror";
           else
-            nou.innerHTML="Mirall horitzontal";
+            nou.innerHTML="Horizontal mirror";
           nou.style.fontFamily="Verdana";
           nou.style.position="absolute";
           nou.style.left=155;
@@ -484,9 +486,9 @@
         {
           var nou=document.createElement("button")
           nou.id="botoPintarFons"+(i+1);
-          nou.innerHTML="Pintar fons de color "+(i+1);
+          nou.innerHTML="Background of color "+(i+1);
           nou.style.height=42;
-          nou.style.width=88;
+          nou.style.width=100;
           nou.style.position="absolute";
           nou.style.top=90+i*50;
           nou.onclick=function() {
